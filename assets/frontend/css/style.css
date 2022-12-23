@@ -4,6 +4,7 @@ body {
     background: linear-gradient(to left, #BC0C51, #4A097C, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     text-align: center;
     color: #FFFFFF;
+    font-family: 'Courier New', monospace;
 }
 
 /*Contact tags*/
@@ -12,7 +13,8 @@ button:after {
     width: 100%;
     height: 64px;
     font-size: 20px;
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
     background: linear-gradient(45deg, transparent 5%, #BC0C51 5%);
     border: 0;
     color: #FFFFFF;
@@ -135,3 +137,19 @@ button:hover:after {
 a.circle {
     color: transparent;
 } /* IE fix: removes blue border */	
+
+/*Text animation*/
+h2 {
+    outline: none;
+    background: linear-gradient(135deg, #5335CF 0%, #DE005E 25%, #F66E48 50%, #DE005E 75%, #5335CF 100%);
+    background-size: 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate 10s linear infinite;
+}
+
+@keyframes animate {
+    to {
+        background-position: 400%;
+    }
+}
