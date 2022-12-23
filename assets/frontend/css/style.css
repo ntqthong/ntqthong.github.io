@@ -9,7 +9,7 @@ body {
 /*Contact tags*/
 button,
 button:after {
-    width: 512px;
+    width: 100%;
     height: 64px;
     font-size: 20px;
     font-family: 'Bebas Neue', sans-serif;
@@ -98,13 +98,17 @@ button:hover:after {
     }
 }
 
-@media (min-width: 768px) {
+@media only screen and (min-width: 768px) {
     button,
     button:after {
         width: 512px;
         height: 64px;
         line-height: 50px;
     }
+}
+
+.mytag {
+    width: 100%;
 }
 
 /*Avatar*/
