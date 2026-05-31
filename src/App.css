@@ -1,0 +1,91 @@
+.app {
+  display: flex;
+  gap: 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+  align-items: flex-start;
+}
+
+.main-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-content {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  min-height: 520px;
+  overflow: hidden;
+}
+
+.content-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 28px 24px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  padding-bottom: 12px;
+  white-space: nowrap;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.page-body {
+  padding: 28px;
+}
+
+/* Shared section styles */
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  padding-bottom: 14px;
+  margin-bottom: 28px;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+@media (max-width: 900px) {
+  .app {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    padding-bottom: 80px;
+  }
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 20px 16px;
+  }
+  .page-body { padding: 20px; }
+}
