@@ -4,6 +4,15 @@
   gap: 20px;
 }
 
+.blog-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 .blog-card {
   background: var(--bg-card);
   border-radius: 14px;
