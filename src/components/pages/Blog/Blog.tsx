@@ -1,5 +1,6 @@
 import './Blog.css'
 
+/*
 const posts = [
   {
     title: 'Getting Started with Android Automotive OS',
@@ -30,6 +31,7 @@ const posts = [
     excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident.',
   },
 ]
+*/
 
 const Blog = () => (
   <section className="blog">

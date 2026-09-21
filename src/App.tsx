@@ -6,6 +6,7 @@ import Resume from './components/pages/Resume/Resume'
 import Portfolio from './components/pages/Portfolio/Portfolio'
 import Blog from './components/pages/Blog/Blog'
 import Contact from './components/pages/Contact/Contact'
+import Background from './components/Background/Background'
 import './App.css'
 
 export type TabType = 'about' | 'resume' | 'portfolio' | 'blog' | 'contact'
@@ -32,8 +33,10 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <Sidebar />
+    <>
+      <Background />
+      <div className="app">
+        <Sidebar />
       <div className="main-wrapper">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <main className="main-content">
@@ -46,6 +49,7 @@ function App() {
         </main>
       </div>
     </div>
+    </>
   )
 }
 

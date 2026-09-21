@@ -3,15 +3,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-primary: #0f0a12;
-  --bg-secondary: #1a1020;
-  --bg-card: #231428;
-  --bg-hover: #2c1a34;
-  --text-primary: #f0e8f2;
-  --text-secondary: #a888b0;
-  --accent: #f39f5a;
-  --accent-hover: #ae445a;
-  --border: rgba(174, 68, 90, 0.2);
+  --bg-primary: #101418;
+  --bg-secondary: #181c20;
+  --bg-card: #1e2227;
+  --bg-hover: #282c32;
+  --text-primary: #e2e2e6;
+  --text-secondary: #91969e;
+  --accent: #7ada96;
+  --accent-hover: #4285f4;
+  --border: rgba(122, 218, 150, 0.20);
   --radius: 16px;
   --transition: 0.25s ease;
 }

@@ -19,12 +19,21 @@ const experience: {
   role: string; company: string; period: string; bullets: string[]
 }[] = [
   {
+    role: 'Android Engineer',
+    company: 'Datalogic',
+    period: 'Jun 2026 — Present',
+    bullets: [
+      '[SDK] Developed enterprise SDK features, refactored legacy modules and deprecated APIs, and resolved critical system defects across custom Android builds on Datalogic handheld hardware to ensure high reliability and release delivery.',
+      'RC Sanity Testing: Performed sanity checks across target devices for each Release Candidate (RC) to ensure build stability.',
+    ],
+  },
+  {
     role: 'Android Automotive Developer',
     company: 'FPT Software',
-    period: 'May 2025 — Present',
+    period: 'May 2025 — May 2026',
     bullets: [
       '[Android Automotive] Set up Android 11 & 13 emulators; initialized Engineering Mode, Keyboard (IME), and Bluetooth Settings; implemented Diagnostic Service (config hub); supported EVS Camera bringup (Rear Camera, Surround View) for a PoC device.',
-      '[POS] Participated in POS project — contributed to architecture design and implementation for a new device PoC.',
+      '[POS] Contributed to software architecture design and implementation for a next-generation Japanese OEM smart POS machine PoC.',
     ],
   },
   {
@@ -87,7 +96,7 @@ const skillGroups = [
   },
   {
     category: 'AI Tools',
-    skills: ['GitHub Copilot', 'ChatGPT', 'Gemini'],
+    skills: ['GitHub Copilot', 'ChatGPT', 'Google Gemini'],
   },
 ]
 

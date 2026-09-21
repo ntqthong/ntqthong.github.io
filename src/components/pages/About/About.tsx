@@ -1,4 +1,4 @@
-import { SiAndroid, SiAndroidstudio, SiClaude, SiKotlin } from 'react-icons/si'
+import { SiAndroid, SiAndroidstudio, SiGooglegemini, SiKotlin } from 'react-icons/si'
 import { FaJava, FaCar, FaCode, FaMobileAlt, FaRobot } from 'react-icons/fa'
 import { GoCopilot } from 'react-icons/go'
 import './About.css'
@@ -37,7 +37,7 @@ const skills = [
   { icon: <SiAndroid />,  label: 'AOSP',    color: '#3ddc84' },
   { icon: <FaCar />,      label: 'AAOS',    color: '#4285f4' },
   { icon: <GoCopilot />,  label: 'Github Copilot',    color: '#6e40c9' },
-  { icon: <SiClaude />,  label: 'Claude',    color: '#d97757' }
+  { icon: <SiGooglegemini />,  label: 'Google Gemini',    color: '#4E82EE' }
 ]
 
 const About = () => (
