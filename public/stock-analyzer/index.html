@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>AlphaPredict • VN Stock Moat & Financial Screener</title>
+    <link type="text/css" rel="stylesheet" href="styles.css?v=20261017_suggestions_fix">
+    <style>
+        #loader {
+            position: fixed;
+            inset: 0;
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.3s ease;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(56, 189, 248, 0.2);
+            border-top: 4px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body class="modal-open">
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text">Initializing AlphaPredict Engine (KMP Wasm)...</div>
+    </div>
+
+    <div id="app-root">
+        <!-- Pure Native HTML Search Header (Full Width End-to-End Layout) -->
+        <header id="html-search-bar-container">
+            <div class="search-inner">
+                <!-- Main Row: [Search bar][Analyze button] ---------------- [Language Switch][BCTC Button] -->
+                <div class="header-main-row">
+                    <form id="html-search-form" class="search-input-group" action="javascript:void(0);">
+                        <div class="search-field-wrapper">
+                            <input
+                                id="html-search-input"
+                                type="text"
+                                inputmode="search"
+                                placeholder="🔍 Tìm mã cổ phiếu (HPG, VNM, SSI, FPT...)"
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="characters"
+                                spellcheck="false"
+                                enterkeyhint="search"
+                            />
+                            <!-- Autocomplete Suggestions Dropdown -->
+                            <div id="search-suggestions-dropdown" class="search-suggestions-dropdown" style="display: none;">
+                                <ul id="search-suggestions-list" class="suggestions-list" role="listbox"></ul>
+                            </div>
+                        </div>
+                        <button id="html-search-btn" type="submit">Phân tích</button>
+                    </form>
+
+                    <!-- End of Line Actions: Segmented Switch & BCTC Button -->
+                    <div class="header-right-actions">
+                        <!-- Flag Toggle Switch (Checkbox + Label) -->
+                        <div class="lang-switch-container">
+                            <input type="checkbox" id="lang-switch-checkbox" class="lang-switch-checkbox" aria-label="Toggle Language" />
+                            <label for="lang-switch-checkbox" class="lang-switch-label" title="Chuyển ngôn ngữ / Toggle Language">Language</label>
+                        </div>
+
+                        <!-- Modern Glassmorphic BCTC Button -->
+                        <button type="button" id="header-bctc-btn" class="modern-bctc-btn" title="Tùy chỉnh tiêu chuẩn BCTC VAS">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20v-6M6 20V10M18 20V4"/>
+                            </svg>
+                            <span id="bctc-label">BCTC VAS</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stock Chips Row -->
+                <div class="quick-chips">
+                    <span class="chips-label">Gợi ý:</span>
+                    <button type="button" class="chip" data-ticker="HPG">HPG</button>
+                    <button type="button" class="chip" data-ticker="VNM">VNM</button>
+                    <button type="button" class="chip" data-ticker="SSI">SSI</button>
+                    <button type="button" class="chip" data-ticker="VCB">VCB</button>
+                    <button type="button" class="chip" data-ticker="MBB">MBB</button>
+                    <button type="button" class="chip" data-ticker="FPT">FPT</button>
+                    <button type="button" class="chip" data-ticker="MWG">MWG</button>
+                    <button type="button" class="chip" data-ticker="ACB">ACB</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Compose Multiplatform Canvas Viewport -->
+        <main id="compose-container"></main>
+    </div>
+
+    <script>
+        // Automatic live data synchronization on page load
+        window.__LATEST_STOCKS_DATA__ = null;
+        (async function autoFetchLatestStocks() {
+            try {
+                const ts = Date.now();
+                const res = await fetch('./data/stocks_latest.json?t=' + ts, { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    window.__LATEST_STOCKS_DATA__ = data;
+                    console.log('%c[AlphaPredict]%c Tự động nạp dữ liệu BCTC mới nhất 2025 thành công', 'color: #38bdf8; font-weight: bold;', 'color: #10b981;', data);
+                }
+            } catch (err) {
+                console.warn('[AlphaPredict] Fallback to embedded 2025 dataset:', err);
+            }
+        })();
+
+        // Dismiss loader when Compose canvas or container is mounted
+        function dismissLoader() {
+            const loader = document.getElementById('loader');
+            if (loader && loader.parentNode) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    if (loader.parentNode) loader.parentNode.removeChild(loader);
+                }, 300);
+            }
+        }
+
+        function checkReady() {
+            if (document.querySelector('canvas')) return true;
+            const container = document.getElementById('compose-container');
+            if (container && container.firstElementChild) return true;
+            return false;
+        }
+
+        const observer = new MutationObserver(() => {
+            if (checkReady()) {
+                dismissLoader();
+                observer.disconnect();
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Polling interval + failsafe timeout
+        const readyInterval = setInterval(() => {
+            if (checkReady()) {
+                dismissLoader();
+                clearInterval(readyInterval);
+                observer.disconnect();
+            }
+        }, 100);
+
+        // Absolute failsafe timeout (2.5 seconds maximum)
+        setTimeout(() => {
+            dismissLoader();
+            clearInterval(readyInterval);
+            observer.disconnect();
+        }, 2500);
+
+        // Pure HTML Search Logic -> Bridge to Kotlin Wasm
+        const searchInput = document.getElementById('html-search-input');
+        const searchForm = document.getElementById('html-search-form');
+        const suggestionsDropdown = document.getElementById('search-suggestions-dropdown');
+        const suggestionsList = document.getElementById('search-suggestions-list');
+
+        // Master stock directory for instant suggestions
+        let stockDirectory = [
+            { ticker: "HPG", name: "Tập đoàn Hòa Phát", sector: "Thép & Xây dựng" },
+            { ticker: "HPX", name: "Đầu tư Hải Phát", sector: "Bất động sản" },
+            { ticker: "HSG", name: "Tập đoàn Hoa Sen", sector: "Tôn mạ & Thép" },
+            { ticker: "HDB", name: "HDBank", sector: "Ngân hàng TMCP" },
+            { ticker: "HAH", name: "Vận tải Hải An", sector: "Cảng biển & Container" },
+            { ticker: "HCM", name: "Chứng khoán HSC", sector: "Chứng khoán" },
+            { ticker: "HDG", name: "Tập đoàn Hà Đô", sector: "Năng lượng & Bất động sản" },
+            { ticker: "HDC", name: "Phát triển Nhà BR-VT", sector: "Bất động sản" },
+            { ticker: "HHV", name: "Đèo Cả (HHV)", sector: "Hạ tầng & BOT" },
+            { ticker: "HT1", name: "Xi măng Hà Tiên 1", sector: "Vật liệu Xây dựng" },
+            { ticker: "HBC", name: "Xây dựng Hòa Bình", sector: "Xây dựng Dân dụng" },
+            { ticker: "HVN", name: "Vietnam Airlines", sector: "Hàng không Quốc gia" },
+            { ticker: "HAG", name: "Hoàng Anh Gia Lai", sector: "Nông nghiệp" },
+            { ticker: "HNG", name: "HAGL Agrico", sector: "Nông nghiệp Quốc tế" },
+            { ticker: "NKG", name: "Thép Nam Kim", sector: "Thép & Tôn mạ" },
+            { ticker: "NLG", name: "Nam Long Group", sector: "Bất động sản Nhà ở" },
+            { ticker: "NVL", name: "Tập đoàn Novaland", sector: "Bất động sản" },
+            { ticker: "NT2", name: "Điện khí Nhơn Trạch 2", sector: "Năng lượng Điện khí" },
+            { ticker: "NAB", name: "Ngân hàng Nam Á", sector: "Ngân hàng TMCP" },
+            { ticker: "NTP", name: "Nhựa Tiền Phong", sector: "Vật liệu Xây dựng" },
+            { ticker: "NSH", name: "Nhôm Sông Hồng", sector: "Vật liệu Nhôm" },
+            { ticker: "NDN", name: "Nhà Đà Nẵng", sector: "Bất động sản" },
+            { ticker: "NRC", name: "Tập đoàn Danh Khôi", sector: "Dịch vụ Bất động sản" },
+            { ticker: "NNC", name: "Đá Núi Nhỏ", sector: "Khai thác Đá & Vật liệu" },
+            { ticker: "OCB", name: "Ngân hàng Phương Đông", sector: "Ngân hàng Thương mại" },
+            { ticker: "OIL", name: "Tổng công ty Dầu Việt Nam", sector: "Phân phối Xăng dầu" },
+            { ticker: "ACB", name: "Ngân hàng Á Châu", sector: "Ngân hàng TMCP" },
+            { ticker: "AGR", name: "Chứng khoán Agribank", sector: "Chứng khoán" },
+            { ticker: "ANV", name: "Thủy sản Nam Việt", sector: "Thủy sản & Cá tra" },
+            { ticker: "AAA", name: "Nhựa An Phát Xanh", sector: "Nhựa Bao bì" },
+            { ticker: "ASM", name: "Tập đoàn Sao Mai", sector: "Năng lượng & BĐS" },
+            { ticker: "BID", name: "BIDV", sector: "Ngân hàng Quốc doanh" },
+            { ticker: "BSR", name: "Lọc hóa dầu Bình Sơn", sector: "Lọc dầu" },
+            { ticker: "BMP", name: "Nhựa Bình Minh", sector: "Vật liệu Xây dựng" },
+            { ticker: "BSI", name: "Chứng khoán BIDV", sector: "Chứng khoán" },
+            { ticker: "BVH", name: "Tập đoàn Bảo Việt", sector: "Bảo hiểm" },
+            { ticker: "BCM", name: "Becamex IDC", sector: "Bất động sản KCN" },
+            { ticker: "CTG", name: "VietinBank", sector: "Ngân hàng Quốc doanh" },
+            { ticker: "CTR", name: "Viettel Construction", sector: "Hạ tầng Viễn thông" },
+            { ticker: "CII", name: "Hạ tầng Kỹ thuật TP.HCM", sector: "Hạ tầng & BOT" },
+            { ticker: "CSV", name: "Hóa chất Cơ bản Miền Nam", sector: "Hóa chất" },
+            { ticker: "CTS", name: "Chứng khoán VietinBank", sector: "Chứng khoán" },
+            { ticker: "CTD", name: "Coteccons", sector: "Xây dựng Xây lắp" },
+            { ticker: "DGC", name: "Hóa chất Đức Giang", sector: "Hóa chất & Phốt pho" },
+            { ticker: "DCM", name: "Đạm Cà Mau", sector: "Phân bón & Hóa chất" },
+            { ticker: "DPM", name: "Đạm Phú Mỹ", sector: "Phân bón & Hóa chất" },
+            { ticker: "DXG", name: "Tập đoàn Đất Xanh", sector: "Bất động sản" },
+            { ticker: "DIG", name: "Tổng CTCP DIC Corp", sector: "Bất động sản" },
+            { ticker: "DGW", name: "Digiworld", sector: "Bán lẻ Công nghệ" },
+            { ticker: "DBC", name: "Dabaco Việt Nam", sector: "Nông nghiệp & Chăn nuôi" },
+            { ticker: "FPT", name: "Tập đoàn FPT", sector: "Công nghệ thông tin" },
+            { ticker: "FRT", name: "FPT Retail / Long Châu", sector: "Bán lẻ Dược phẩm" },
+            { ticker: "FTS", name: "Chứng khoán FPT", sector: "Chứng khoán" },
+            { ticker: "GAS", name: "PV Gas", sector: "Năng lượng & Khí" },
+            { ticker: "GVR", name: "Tập đoàn Cao su Việt Nam", sector: "Cao su & KCN" },
+            { ticker: "GMD", name: "Gemadept", sector: "Cảng biển & Logistics" },
+            { ticker: "GEX", name: "Tập đoàn GELEX", sector: "Thiết bị Điện & Hạ tầng" },
+            { ticker: "KDH", name: "Nhà Khang Điền", sector: "Bất động sản" },
+            { ticker: "KBC", name: "Kinh Bắc City", sector: "Bất động sản KCN" },
+            { ticker: "KSB", name: "Khoáng sản Bình Dương", sector: "Khai thác Đá & Vật liệu" },
+            { ticker: "LPB", name: "LPBank", sector: "Ngân hàng TMCP" },
+            { ticker: "MBB", name: "Ngân hàng Quân Đội", sector: "Ngân hàng TMCP" },
+            { ticker: "MSB", name: "MSB Bank", sector: "Ngân hàng TMCP" },
+            { ticker: "MWG", name: "Thế Giới Di Động", sector: "Bán lẻ & Tiêu dùng" },
+            { ticker: "MSN", name: "Tập đoàn Masan", sector: "Tiêu dùng & Bán lẻ" },
+            { ticker: "MBS", name: "Chứng khoán MB", sector: "Chứng khoán" },
+            { ticker: "PVD", name: "Khoan Dầu khí PV Drilling", sector: "Dầu khí & Dịch vụ" },
+            { ticker: "PVS", name: "Dịch vụ Kỹ thuật PTSC", sector: "Dầu khí & Xây lắp" },
+            { ticker: "PLX", name: "Petrolimex", sector: "Phân phối Xăng dầu" },
+            { ticker: "POW", name: "PV Power", sector: "Năng lượng Điện" },
+            { ticker: "PNJ", name: "Vàng bạc Đá quý Phú Nhuận", sector: "Bán lẻ Trang sức" },
+            { ticker: "PC1", name: "Tập đoàn PC1", sector: "Xây lắp Điện & Năng lượng" },
+            { ticker: "REE", name: "Cơ Điện Lạnh REE", sector: "Hạ tầng Điện Nước" },
+            { ticker: "SSI", name: "Chứng khoán SSI", sector: "Chứng khoán & Đầu tư" },
+            { ticker: "STB", name: "Sacombank", sector: "Ngân hàng TMCP" },
+            { ticker: "SHB", name: "SHB Bank", sector: "Ngân hàng TMCP" },
+            { ticker: "SSB", name: "SeABank", sector: "Ngân hàng TMCP" },
+            { ticker: "SHS", name: "Chứng khoán SHS", sector: "Chứng khoán" },
+            { ticker: "SBT", name: "Thành Thành Công Biên Hòa", sector: "Mía đường" },
+            { ticker: "TCB", name: "Techcombank", sector: "Ngân hàng TMCP" },
+            { ticker: "TPB", name: "TPBank", sector: "Ngân hàng TMCP" },
+            { ticker: "TCH", name: "Tài chính Hoàng Huy", sector: "Bất động sản" },
+            { ticker: "VCB", name: "Vietcombank", sector: "Ngân hàng Quốc doanh" },
+            { ticker: "VHM", name: "Vinhomes", sector: "Bất động sản dân dụng" },
+            { ticker: "VIC", name: "Tập đoàn Vingroup", sector: "Tập đoàn đa ngành" },
+            { ticker: "VNM", name: "Vinamilk", sector: "Thực phẩm & Sữa" },
+            { ticker: "VRE", name: "Vincom Retail", sector: "BĐS Bán lẻ / TTTM" },
+            { ticker: "VIB", name: "VIB Bank", sector: "Ngân hàng TMCP" },
+            { ticker: "VPB", name: "VPBank", sector: "Ngân hàng TMCP" },
+            { ticker: "VND", name: "Chứng khoán VNDIRECT", sector: "Chứng khoán" },
+            { ticker: "VCI", name: "Chứng khoán Vietcap", sector: "Chứng khoán" },
+            { ticker: "VCG", name: "Vinaconex", sector: "Xây dựng & Hạ tầng" },
+            { ticker: "VGI", name: "Viettel Global", sector: "Đầu tư Viễn thông Quốc tế" }
+        ];
+
+        // Kotlin Wasm Bridge to register / enrich stock directory
+        window.__initStockDirectory = function(jsonStr) {
+            try {
+                const parsed = JSON.parse(jsonStr);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    const map = new Map();
+                    parsed.forEach(item => map.set(item.ticker, item));
+                    stockDirectory.forEach(item => {
+                        if (!map.has(item.ticker)) map.set(item.ticker, item);
+                    });
+                    stockDirectory = Array.from(map.values());
+                }
+            } catch (e) {
+                console.warn('[AlphaPredict] Failed to parse stock directory from Wasm:', e);
+            }
+        };
+
+        let selectedSuggestionIndex = -1;
+        let currentSuggestions = [];
+
+        function renderSuggestions(query) {
+            const clean = (query || '').trim().toUpperCase();
+            if (!clean || !suggestionsDropdown || !suggestionsList) {
+                hideSuggestions();
+                return;
+            }
+
+            // Strictly filter stocks whose ticker starts with the typed prefix (e.g. H -> HPG, HSG... ; HC -> HCM...)
+            currentSuggestions = stockDirectory
+                .filter(s => s.ticker.startsWith(clean))
+                .slice(0, 8);
+            selectedSuggestionIndex = -1;
+
+            if (currentSuggestions.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            suggestionsList.innerHTML = currentSuggestions.map((item, idx) => `
+                <li class="suggestion-item" data-ticker="${item.ticker}" data-index="${idx}" role="option">
+                    <div class="suggestion-ticker-badge">${item.ticker}</div>
+                    <div class="suggestion-info">
+                        <span class="suggestion-name">${item.name}</span>
+                        <span class="suggestion-industry">${item.sector || ''}</span>
+                    </div>
+                    <svg class="suggestion-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </li>
+            `).join('');
+
+            suggestionsDropdown.style.display = 'block';
+        }
+
+        function hideSuggestions() {
+            if (suggestionsDropdown) {
+                suggestionsDropdown.style.display = 'none';
+            }
+            selectedSuggestionIndex = -1;
+            currentSuggestions = [];
+        }
+
+        function highlightSuggestion(index) {
+            if (!suggestionsList) return;
+            const items = suggestionsList.querySelectorAll('.suggestion-item');
+            items.forEach((item, idx) => {
+                if (idx === index) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // iOS Safari touch event isolation: prevent canvas/document from intercepting tap
+        if (searchInput) {
+            searchInput.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+
+            searchInput.addEventListener('touchend', function(e) {
+                e.stopPropagation();
+                this.focus();
+            }, { passive: false });
+
+            searchInput.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.focus();
+                if (this.value) {
+                    renderSuggestions(this.value);
+                }
+            });
+
+            // Instant autocomplete filtering as user types 1 or 2 characters
+            searchInput.addEventListener('input', function(e) {
+                const val = e.target.value;
+                renderSuggestions(val);
+                window.__PENDING_SEARCH_INPUT__ = val;
+                window.dispatchEvent(new Event('alpha_search_input'));
+            });
+
+            // Keyboard navigation (Arrow keys, Enter, Escape)
+            searchInput.addEventListener('keydown', function(e) {
+                if (!suggestionsDropdown || suggestionsDropdown.style.display === 'none') {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (currentSuggestions.length > 0) {
+                        selectedSuggestionIndex = (selectedSuggestionIndex + 1) % currentSuggestions.length;
+                        highlightSuggestion(selectedSuggestionIndex);
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (currentSuggestions.length > 0) {
+                        selectedSuggestionIndex = (selectedSuggestionIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
+                        highlightSuggestion(selectedSuggestionIndex);
+                    }
+                } else if (e.key === 'Enter') {
+                    if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < currentSuggestions.length) {
+                        e.preventDefault();
+                        const chosen = currentSuggestions[selectedSuggestionIndex].ticker;
+                        hideSuggestions();
+                        submitSearch(chosen);
+                    }
+                } else if (e.key === 'Escape') {
+                    hideSuggestions();
+                }
+            });
+        }
+
+        function submitSearch(ticker) {
+            hideSuggestions();
+            if (!ticker) return;
+            const clean = ticker.trim().toUpperCase();
+            if (!clean) return;
+
+            if (searchInput) {
+                searchInput.value = clean;
+                searchInput.blur(); // Dismiss mobile keyboard cleanly
+            }
+
+            window.__PENDING_SEARCH_TICKER__ = clean;
+            window.dispatchEvent(new Event('alpha_search_submit'));
+        }
+
+        if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (searchInput) {
+                    submitSearch(searchInput.value);
+                }
+            });
+        }
+
+        // Delegate click / touch on suggestions list
+        if (suggestionsList) {
+            suggestionsList.addEventListener('click', (e) => {
+                const item = e.target.closest('.suggestion-item');
+                if (item) {
+                    const ticker = item.getAttribute('data-ticker');
+                    if (ticker) {
+                        submitSearch(ticker);
+                    }
+                }
+            });
+        }
+
+        // Dismiss dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-field-wrapper')) {
+                hideSuggestions();
+            }
+        });
+
+        // Quick Chips click handler
+        document.querySelectorAll('.chip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const ticker = btn.getAttribute('data-ticker');
+                if (ticker) {
+                    submitSearch(ticker);
+                }
+            });
+        });
+
+        // Flag Checkbox Toggle Language Switch Handler
+        let isEnglish = false;
+        const langCheckbox = document.getElementById('lang-switch-checkbox');
+        const bctcLabel = document.getElementById('bctc-label');
+        const searchBtn = document.getElementById('html-search-btn');
+        const chipsLabel = document.querySelector('.chips-label');
+
+        function setLanguage(en) {
+            isEnglish = en;
+            if (langCheckbox && langCheckbox.checked !== isEnglish) {
+                langCheckbox.checked = isEnglish;
+            }
+            if (isEnglish) {
+                if (bctcLabel) bctcLabel.textContent = 'Financials';
+                if (searchBtn) searchBtn.textContent = 'Analyze';
+                if (chipsLabel) chipsLabel.textContent = 'Popular:';
+                if (searchInput) searchInput.placeholder = '🔍 Search stock ticker (HPG, VNM, SSI...)';
+            } else {
+                if (bctcLabel) bctcLabel.textContent = 'BCTC VAS';
+                if (searchBtn) searchBtn.textContent = 'Phân tích';
+                if (chipsLabel) chipsLabel.textContent = 'Gợi ý:';
+                if (searchInput) searchInput.placeholder = '🔍 Tìm mã cổ phiếu (HPG, VNM, SSI...)';
+            }
+        }
+
+        if (langCheckbox) {
+            langCheckbox.addEventListener('change', () => {
+                setLanguage(langCheckbox.checked);
+                window.dispatchEvent(new Event('alpha_toggle_language'));
+            });
+        }
+
+        const bctcBtn = document.getElementById('header-bctc-btn');
+        if (bctcBtn) {
+            bctcBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new Event('alpha_toggle_custom_dialog'));
+            });
+        }
+
+        // Wasm-to-HTML synchronization
+        window.__syncNativeSearchText = function(text) {
+            if (searchInput) {
+                searchInput.value = text || '';
+            }
+        };
+
+        window.__setNativeModalVisible = function(visible) {
+            if (visible) {
+                document.body.classList.add('modal-open');
+            } else {
+                document.body.classList.remove('modal-open');
+            }
+        };
+
+        window.__updateNativeSearchBounds = function() {};
+    </script>
+    <script type="application/javascript" src="webApp.js?v=20261016_segmented_switch"></script>
+</body>
+</html>

@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { FaGithub, FaInfoCircle, FaTimes } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { FaGithub, FaInfoCircle, FaTimes, FaExternalLinkAlt, FaAndroid } from 'react-icons/fa'
 import aaosImg from '../../../assets/aaos.png'
 import aospImg from '../../../assets/aosp.png'
 import posAospImg from '../../../assets/pos_aosp.png'
 import mobComputingAospImg from '../../../assets/mob_computing_aosp.png.jpeg'
+import alphapredictImg from '../../../assets/alphapredict.png'
 import './Portfolio.css'
 
 type FilterType = 'all' | 'contributions' | 'personal'
@@ -11,10 +13,12 @@ type FilterType = 'all' | 'contributions' | 'personal'
 interface Project {
   title: string
   category: Exclude<FilterType, 'all'>
-  img: string
-  shortDesc: string
+  img?: string
+  shortDesc?: string
   purpose?: string
   github?: string
+  liveUrl?: string
+  apkUrl?: string
   company?: string
   role?: string
   period?: string
@@ -23,6 +27,17 @@ interface Project {
 }
 
 const projects: Project[] = [
+  {
+    title: 'AlphaPredict',
+    category: 'personal',
+    role: 'Creator & Developer',
+    period: '2025 – 2026',
+    purpose: 'Vietnam Stock Analysis & Prediction Tool',
+    img: alphapredictImg,
+    techStack: ['KMP', 'Kotlin/Wasm', 'VAS Accounting Standards', 'HTML5 Canvas'],
+    liveUrl: '/stock-analyzer/index.html',
+    shortDesc: 'A tool for analyzing and predicting Vietnam stock financial health, profitability, debt risk, and fair valuation based on VAS audited data.',
+  },
   {
     title: 'Enterprise Handheld Computing & Android One OS SDK',
     category: 'contributions',
@@ -160,6 +175,17 @@ const Portfolio = () => {
   const [active, setActive] = useState<FilterType>('all')
   const [selected, setSelected] = useState<Project | null>(null)
 
+  useEffect(() => {
+    if (selected) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [selected])
+
   const filtered = active === 'all' ? projects : projects.filter((p) => p.category === active)
 
   return (
@@ -180,25 +206,37 @@ const Portfolio = () => {
       <div className="projects-grid">
         {filtered.map((p) => (
           <div key={p.title} className="project-card">
-            <div className="project-img-wrap">
-              <img src={p.img} alt={p.title} />
-              <div className="project-links">
-                {p.github && (
-                  <a href={p.github} aria-label="GitHub" target="_blank" rel="noreferrer">
-                    <FaGithub />
-                  </a>
-                )}
-                {p.details && (
-                  <button
-                    className="project-detail-btn"
-                    aria-label="View details"
-                    onClick={() => setSelected(p)}
-                  >
-                    <FaInfoCircle />
-                  </button>
-                )}
+            {p.img && (
+              <div className="project-img-wrap">
+                <img src={p.img} alt={p.title} />
+                <div className="project-links">
+                  {p.liveUrl && (
+                    <a href={p.liveUrl} aria-label="Launch Web App" title="Launch Web App" target="_blank" rel="noreferrer">
+                      <FaExternalLinkAlt />
+                    </a>
+                  )}
+                  {p.apkUrl && (
+                    <a href={p.apkUrl} download aria-label="Download Android APK" title="Download Android APK">
+                      <FaAndroid />
+                    </a>
+                  )}
+                  {p.github && (
+                    <a href={p.github} aria-label="GitHub" target="_blank" rel="noreferrer">
+                      <FaGithub />
+                    </a>
+                  )}
+                  {p.details && (
+                    <button
+                      className="project-detail-btn"
+                      aria-label="View details"
+                      onClick={() => setSelected(p)}
+                    >
+                      <FaInfoCircle />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
             <div className="project-info">
               <h3>{p.title}</h3>
               {(p.role || p.period) && (
@@ -214,13 +252,37 @@ const Portfolio = () => {
                   {p.techStack.map((t) => <li key={t} className="tech-tag">{t}</li>)}
                 </ul>
               )}
-              <p>{p.shortDesc}</p>
+              {p.shortDesc && <p>{p.shortDesc}</p>}
+              {!p.img && p.liveUrl && (
+                <div style={{ marginTop: '16px' }}>
+                  <a
+                    href={p.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 22px',
+                      backgroundColor: 'var(--accent)',
+                      color: '#000',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      textDecoration: 'none',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <FaExternalLinkAlt /> Open App
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      {selected && (
+      {selected && typeof document !== 'undefined' && createPortal(
         <div className="modal-overlay" onClick={() => setSelected(null)}>
           <div className="modal-wrapper">
             <button className="modal-close" onClick={() => setSelected(null)} aria-label="Close">
@@ -246,6 +308,52 @@ const Portfolio = () => {
                   {selected.techStack.map((t) => <li key={t} className="tech-tag">{t}</li>)}
                 </ul>
               )}
+              {(selected.liveUrl || selected.apkUrl) && (
+                <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
+                  {selected.liveUrl && (
+                    <a
+                      href={selected.liveUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 16px',
+                        backgroundColor: '#38bdf8',
+                        color: '#0f172a',
+                        borderRadius: '8px',
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <FaExternalLinkAlt /> Launch Web App
+                    </a>
+                  )}
+                  {selected.apkUrl && (
+                    <a
+                      href={selected.apkUrl}
+                      download
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 16px',
+                        backgroundColor: '#1e293b',
+                        color: '#38bdf8',
+                        border: '1px solid #38bdf8',
+                        borderRadius: '8px',
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <FaAndroid /> Download Android APK
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
             <div className="modal-body">
               <ul>
@@ -254,7 +362,8 @@ const Portfolio = () => {
             </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   )

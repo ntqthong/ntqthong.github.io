@@ -1,0 +1,187 @@
+{
+  "fiscalYear": 2025,
+  "standards": "VAS Circular 200/2014/TT-BTC",
+  "auditStatus": "Audited Annual Report 2025",
+  "syncedAt": "2025-12-31T23:59:59Z",
+  "stocks": {
+    "FPT": {
+      "ticker": "FPT",
+      "name": "CTCP FPT",
+      "sector": "Công nghệ & IT",
+      "price": 142000.0,
+      "pe": 23.5,
+      "pb": 5.6,
+      "roe2025": 28.2,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 74800.0,
+        "grossProfit": 28900.0,
+        "operatingProfit": 13450.0,
+        "profitBeforeTax": 13450.0,
+        "netIncome": 11480.0,
+        "cashAndInvestments": 33700.0,
+        "operatingCashFlow": 12800.0,
+        "capEx": 3600.0
+      }
+    },
+    "VNM": {
+      "ticker": "VNM",
+      "name": "Vinamilk",
+      "sector": "Hàng tiêu dùng & Sữa",
+      "price": 69500.0,
+      "pe": 15.8,
+      "pb": 3.6,
+      "roe2025": 27.1,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 64200.0,
+        "grossProfit": 27100.0,
+        "operatingProfit": 12600.0,
+        "profitBeforeTax": 12600.0,
+        "netIncome": 10350.0,
+        "cashAndInvestments": 26200.0,
+        "operatingCashFlow": 11200.0,
+        "capEx": 2100.0
+      }
+    },
+    "ACB": {
+      "ticker": "ACB",
+      "name": "Ngân hàng TMCP Á Châu",
+      "sector": "Ngân hàng Thương mại",
+      "price": 26800.0,
+      "pe": 5.5,
+      "pb": 1.2,
+      "roe2025": 22.4,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 40500.0,
+        "grossProfit": 33200.0,
+        "operatingProfit": 24800.0,
+        "profitBeforeTax": 24800.0,
+        "netIncome": 19840.0,
+        "totalEquity": 98500.0,
+        "operatingCashFlow": 18500.0,
+        "capEx": 750.0
+      }
+    },
+    "BMP": {
+      "ticker": "BMP",
+      "name": "Nhựa Bình Minh",
+      "sector": "Vật liệu Xây dựng",
+      "price": 126000.0,
+      "pe": 8.5,
+      "pb": 3.2,
+      "roe2025": 38.9,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 5550.0,
+        "grossProfit": 2380.0,
+        "operatingProfit": 1460.0,
+        "profitBeforeTax": 1460.0,
+        "netIncome": 1168.0,
+        "cashAndInvestments": 2230.0,
+        "operatingCashFlow": 1410.0,
+        "capEx": 130.0
+      }
+    },
+    "VCB": {
+      "ticker": "VCB",
+      "name": "Vietcombank",
+      "sector": "Ngân hàng Quốc gia",
+      "price": 96500.0,
+      "pe": 14.1,
+      "pb": 2.45,
+      "roe2025": 19.3,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 75000.0,
+        "grossProfit": 61000.0,
+        "operatingProfit": 51000.0,
+        "profitBeforeTax": 51000.0,
+        "netIncome": 40800.0,
+        "totalEquity": 228000.0,
+        "operatingCashFlow": 36000.0,
+        "capEx": 2100.0
+      }
+    },
+    "HPG": {
+      "ticker": "HPG",
+      "name": "Tập đoàn Hòa Phát",
+      "sector": "Thép & Công nghiệp",
+      "price": 32500.0,
+      "pe": 13.8,
+      "pb": 1.45,
+      "roe2025": 13.5,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 168000.0,
+        "grossProfit": 25200.0,
+        "operatingProfit": 18500.0,
+        "profitBeforeTax": 18500.0,
+        "netIncome": 15800.0,
+        "operatingCashFlow": 25500.0,
+        "capEx": 22000.0
+      }
+    },
+    "VIC": {
+      "ticker": "VIC",
+      "name": "Tập đoàn Vingroup",
+      "sector": "Tập đoàn Đa ngành",
+      "price": 42500.0,
+      "pe": 65.0,
+      "pb": 1.15,
+      "roe2025": 2.1,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 215000.0,
+        "grossProfit": 31000.0,
+        "operatingProfit": 18200.0,
+        "profitBeforeTax": 18200.0,
+        "netIncome": 2850.0,
+        "totalDebt": 257000.0,
+        "operatingCashFlow": -14000.0,
+        "capEx": 48000.0
+      }
+    },
+    "NVL": {
+      "ticker": "NVL",
+      "name": "Tập đoàn Novaland",
+      "sector": "Bất động sản Nhà ở",
+      "price": 11800.0,
+      "pe": 30.0,
+      "pb": 1.05,
+      "roe2025": 1.1,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 6200.0,
+        "grossProfit": 1850.0,
+        "operatingProfit": 780.0,
+        "profitBeforeTax": 780.0,
+        "netIncome": 490.0,
+        "totalDebt": 53000.0,
+        "operatingCashFlow": -2200.0,
+        "capEx": 720.0
+      }
+    },
+    "NKG": {
+      "ticker": "NKG",
+      "name": "Thép Nam Kim",
+      "sector": "Tôn mạ & Thép xuất khẩu",
+      "price": 21800.0,
+      "pe": 14.8,
+      "pb": 1.05,
+      "roe2025": 9.8,
+      "latestStatement": {
+        "year": 2025,
+        "netRevenue": 23800.0,
+        "grossProfit": 1950.0,
+        "operatingProfit": 920.0,
+        "profitBeforeTax": 920.0,
+        "netIncome": 750.0,
+        "totalEquity": 7950.0,
+        "operatingCashFlow": 1650.0,
+        "capEx": 650.0
+      }
+    }
+  }
+}
